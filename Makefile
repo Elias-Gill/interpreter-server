@@ -1,9 +1,9 @@
 run:
-	mvn clean compile assembly:single
+	mvn clean package
 	java -jar target/*jar-with-dependencies.jar
 
 build:
-	mvn clean compile assembly:single
+	mvn clean package
 
 test:
 	mvn test

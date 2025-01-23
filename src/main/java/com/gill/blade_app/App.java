@@ -8,6 +8,6 @@ import com.hellokaton.blade.*;
  */
 public class App {
     public static void main(String[] args) {
-        Blade.create().start();
+        Blade.create().start(App.class, args);
     }
 }
