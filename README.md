@@ -1,20 +1,28 @@
 # Interpreted Code Executor Server
 
-Este servidor de backend ejecuta código usando mi intérprete personal y devuelve los
-resultados.
+Este servidor de backend ejecuta código usando mi
+[intérprete](github.com/elias-gill/interpreter) personal y devuelve los resultados.
 Incluye una página de frontend sencilla y un único punto de acceso API.
 
-## Características principales
+## Características de la API
 
-- Punto de acceso API:
+- Único endpoint de la API:
   `/interpreter`
-- Retorna resultados en formato JSON
-- Página de frontend simple en "/"
-- Implementado con Java Blade en lugar de Spring Boot (experimento)
-- Requiere Java 8+ y Maven para ejecución
-- Utiliza Maven Assembly Plugin para compilación
-- Genera un JAR con dependencias
-- Incluye Makefile para facilitar el desarrollo
+- Estructura del JSON de entrada:
+```json 
+{ 
+    "mode": "eval|lexer|parser", 
+    "code": "código a ejecutar" 
+} 
+  ```
+- Estructura del JSON de salida:
+- 
+```json
+{ 
+    "output": "resultado de la ejecución", 
+    "errors": "cualquier error ocurrido durante la ejecución" 
+} 
+  ```
 
 ## Requisitos de instalación
 
@@ -34,4 +42,4 @@ Incluye una página de frontend sencilla y un único punto de acceso API.
 - La implementación con Java Blade es experimental y puede ser reemplazada por Spring Boot en
   futuras versiones.
 
-Licenciado bajo la Licencia MIT.
+[Licencia MIT](LICENSE).
