@@ -132,11 +132,19 @@
       #error-box {
         color: #ff5252; /* Red for errors */
       }
+
+      a {
+        color: #4caf50; /* Green for output */
+      }
+
+      a:visited {
+        color: #4caf50; /* Green for output */
+      }
     </style>
   </head>
   <body>
     <div class="header">
-      <h1>Code Interpreter</h1>
+      <h1>See the <a href="https://github.com/elias-gill/interpreter">source code</a></h1>
     </div>
     <div class="container">
       <div class="editor-container">
@@ -171,6 +179,12 @@
           mode: "javascript",
           theme: "dracula",
         });
+        editor.setValue("func fibo(a) {\n" + 
+            "   si (a < 1) {retorna 0};\n" + 
+            "   si (a == 1) {retorna 1};\n" + 
+            "   retorna fibo(a-1) + fibo(a-2);\n" + 
+            "}\n" + 
+            "var aux = 10;\nfibo(aux);");
 
         const runButton = document.getElementById("run-code");
         const modeSelector = document.getElementById("mode-selector");
