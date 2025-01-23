@@ -1,202 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Interpreter</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #1e1e2f;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Interpreter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #1e1e2f;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
 
-    .header {
-      background-color: #2a2a40;
-      padding: 10px 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
+      .header {
+        background-color: #2a2a40;
+        padding: 10px 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
 
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
 
-    .container {
-      display: flex;
-      flex: 1;
-      padding: 20px;
-      gap: 20px;
-    }
+      .container {
+        display: flex;
+        flex: 1;
+        padding: 20px;
+        gap: 20px;
+        height: calc(100vh - 60px); /* Subtract header height */
+      }
 
-    .editor-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+      .editor-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 100%; /* Take full height of container */
+        width: 100%; /* Take full height of container */
+        max-width: 47vw; /* Take full height of container */
+      }
 
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    .controls select {
-      padding: 5px 10px;
-      font-size: 14px;
-      border-radius: 4px;
-      border: 1px solid #444;
-      background-color: #3a3a5a;
-      color: #ffffff;
-    }
+      .controls select {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid #444;
+        background-color: #3a3a5a;
+        color: #ffffff;
+      }
 
-    .controls button {
-      padding: 5px 15px;
-      font-size: 14px;
-      color: #fff;
-      background-color: #007bff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+      .controls button {
+        padding: 5px 15px;
+        font-size: 14px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
 
-    .controls button:hover {
-      background-color: #0056b3;
-    }
+      .controls button:hover {
+        background-color: #0056b3;
+      }
 
-    .CodeMirror {
-      flex: 1;
-      border: 1px solid #444;
-      border-radius: 4px;
-      font-size: 14px;
-    }
+      .CodeMirror {
+        flex: 1; /* Take remaining space in editor-container */
+        border: 1px solid #444;
+        border-radius: 4px;
+        font-size: 14px;
+      }
 
-    .output-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+      .output-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        height: 96%; /* Take full height of container */
+        margin-top: 40px;
+        max-width: 47vw; /* Take full height of container */
+      }
 
-    .output-box, .error-box {
-      flex: 1;
-      background-color: #3a3a5a;
-      border: 1px solid #444;
-      border-radius: 4px;
-      padding: 10px;
-      overflow-y: auto;
-    }
+      .output-box, .error-box {
+        background-color: #3a3a5a;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 10px;
+        overflow-y: auto; /* Make boxes scrollable */
+        box-sizing: border-box; /* Ensure padding is included in height */
+      }
 
-    .output-box h2, .error-box h2 {
-      margin: 0 0 10px 0;
-      font-size: 18px;
-    }
+      .output-box {
+        flex: 3; /* Output box is 3 times larger than error box */
+        height: 65%; /* Fixed height relative to viewport */
+        min-height: 65%; /* Prevent shrinking */
+        max-height: 65%; /* Prevent growing */
+      }
 
-    pre {
-      margin: 0;
-      font-family: "Courier New", monospace;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      color: #ffffff;
-    }
+      .error-box {
+        flex: 1; /* Error box is smaller */
+        height: 25%; /* Fixed height relative to viewport */
+        min-height: 25%; /* Prevent shrinking */
+        max-height: 25%; /* Prevent growing */
+      }
 
-    #output-box {
-      color: #4caf50; /* Green for output */
-    }
+      pre {
+        margin: 0;
+        font-family: "Courier New", monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: #ffffff;
+      }
 
-    #error-box {
-      color: #ff5252; /* Red for errors */
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>Code Interpreter</h1>
-  </div>
-  <div class="container">
-    <div class="editor-container">
-      <div class="controls">
-        <select id="mode-selector">
-          <option value="lexer">Lexer</option>
-          <option value="parser">Parser</option>
-          <option value="eval">Eval</option>
-        </select>
-        <button id="run-code">Run Code</button>
-      </div>
-      <textarea id="code-editor"></textarea>
+      #output-box {
+        color: #4caf50; /* Green for output */
+      }
+
+      #error-box {
+        color: #ff5252; /* Red for errors */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Code Interpreter</h1>
     </div>
-    <div class="output-container">
-      <div class="output-box">
-        <h2>Output</h2>
-        <pre id="output-box"></pre>
+    <div class="container">
+      <div class="editor-container">
+        <div class="controls">
+          <select id="mode-selector">
+            <option value="lexer">Lexer</option>
+            <option value="parser">Parser</option>
+            <option value="eval">Eval</option>
+          </select>
+          <button id="run-code">Run Code</button>
+        </div>
+        <textarea id="code-editor"></textarea>
       </div>
-      <div class="error-box">
-        <h2>Errors</h2>
-        <pre id="error-box"></pre>
+      <div class="output-container">
+        <div class="output-box">
+          <h2>Output</h2>
+          <pre id="output-box"></pre>
+        </div>
+        <div class="error-box">
+          <h2>Errors</h2>
+          <pre id="error-box"></pre>
+        </div>
       </div>
     </div>
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Initialize CodeMirror editor
-      const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
-        lineNumbers: true,
-        mode: "javascript",
-        theme: "dracula",
-      });
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Initialize CodeMirror editor
+        const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+          lineNumbers: true,
+          mode: "javascript",
+          theme: "dracula",
+        });
 
-      const runButton = document.getElementById("run-code");
-      const modeSelector = document.getElementById("mode-selector");
-      const outputBox = document.getElementById("output-box");
-      const errorBox = document.getElementById("error-box");
+        const runButton = document.getElementById("run-code");
+        const modeSelector = document.getElementById("mode-selector");
+        const outputBox = document.getElementById("output-box");
+        const errorBox = document.getElementById("error-box");
 
-      runButton.addEventListener("click", async () => {
-        const code = editor.getValue();
-        const mode = modeSelector.value;
+        runButton.addEventListener("click", async () => {
+          const code = editor.getValue();
+          const mode = modeSelector.value;
 
-        // Clear previous results
-        outputBox.textContent = "";
-        errorBox.textContent = "";
+          // Clear previous results
+          outputBox.textContent = "";
+          errorBox.textContent = "";
 
-        try {
-          // Make an API call to execute the code with the selected mode
-          const response = await fetch("/interpreter", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ code, mode }),
-          });
+          try {
+            // Make an API call to execute the code with the selected mode
+            const response = await fetch("/interpreter", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ code, mode }),
+            });
 
-          if (!response.ok) {
-            throw new Error("API Error: " + response.statusText);
-          }
+            if (!response.ok) {
+              throw new Error("API Error: " + response.statusText);
+            }
 
-          const data = await response.json();
+            const data = await response.json();
 
-          // Display output or error
-          if (data.output) {
-            outputBox.textContent = data.output;
-          } else if (data.errors) {
-            errorBox.textContent = data.errors;
-          }
-        } catch (error) {
-          // Handle errors
+            // Display output or error
+            if (data.output) {
+              outputBox.textContent = data.output;
+            } else if (data.errors) {
+              errorBox.textContent = data.errors;
+            }
+          } catch (error) {
+            // Handle errors
             errorBox.textContent = "Error: " + error.message;
-        }
+          }
+        });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
